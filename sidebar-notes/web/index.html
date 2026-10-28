@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>便笺</title>
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/dashjs.js" defer></script>
+  <script type="module" src="/app.mjs"></script>
+</head>
+<body>
+  <main class="workspace">
+    <header class="toolbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">▤</span><span>便笺</span><span class="tag">LOCAL</span></div>
+      <div class="toolbar-actions">
+        <button id="preview-toggle" class="text-button" aria-expanded="true" aria-controls="preview-panel">资料</button>
+      </div>
+    </header>
+
+    <section id="preview-panel" class="preview-panel" aria-label="视频预览">
+      <div id="player-stage" class="player-stage">
+        <div id="player-placeholder" class="player-placeholder">
+          <span class="preview-glyph" aria-hidden="true">▷</span>
+          <p id="placeholder-title">留一点空间给自己</p>
+          <span id="placeholder-detail">点「开始浏览」，不必输入链接。</span>
+          <button id="reload-button" class="text-button" hidden>重新载入</button>
+        </div>
+        <div id="frame-mount"></div>
+      </div>
+      <div class="quality-row"><span id="playback-status" role="status">登录后优先 1080P</span><div class="quality-actions"><label class="sr-only" for="quality-select">播放画质</label><select id="quality-select" aria-label="播放画质" hidden></select><button id="external-player" class="text-button" hidden>外链播放</button></div></div>
+      <div class="brightness-row"><label for="brightness">亮度</label><input id="brightness" type="range" min="30" max="160" step="5" value="100" aria-label="视频亮度"><output id="brightness-value" for="brightness">100%</output><button id="brightness-reset" class="text-button" title="恢复原始亮度">还原</button></div>
+      <div class="current-video"><p id="current-title">挑一条，慢慢看</p><span id="current-meta">正在获取列表…</span></div>
+      <button id="hide-button" class="hide-wide" aria-label="专注模式" title="切换到便笺"><span>专注</span><span class="hide-hint"><kbd>F8</kbd></span></button>
+      <div class="feed-controls"><button id="previous-video" class="secondary-button" disabled>上一条</button><button id="next-video" class="primary-button" disabled>开始浏览</button></div>
+      <div class="browse-header">
+        <label class="sr-only" for="feed-source">视频栏目</label>
+        <select id="feed-source" aria-label="视频栏目"><option value="personal">为你推荐</option><option value="popular">综合热门</option></select>
+        <div class="browse-header-actions"><button id="feed-retry" class="text-button">换一批</button><button id="account-button" class="text-button" aria-expanded="false" aria-controls="account-panel">账号</button></div>
+      </div>
+      <aside id="account-panel" class="help-panel" hidden>
+        <p id="account-status" role="status">正在检查账号…</p>
+        <div id="login-actions"><button id="login-button" class="primary-button">扫码登录</button><button id="cancel-login" class="text-button" hidden>取消扫码</button></div>
+        <div id="qr-container" class="qr-container" hidden><img id="qr-image" alt="B站登录二维码" width="240" height="240"><p id="qr-status" role="status">用手机 B 站 App 扫码，并在手机上确认。</p></div>
+        <p id="login-persistence" class="account-note">登录后自动记住账号，下次打开时恢复；B 站登录过期后需要重新扫码。</p>
+        <p class="account-note">登录用于获取你的首页推荐与可播放的高清画质。默认优先 1080P；实际选项取决于视频和账号权限。</p>
+      </aside>
+      <div id="feed-message" class="feed-message" role="status">正在连接 B 站…</div>
+      <details class="manual-source"><summary>粘贴链接</summary>
+      <form id="source-form" novalidate>
+        <div class="input-line">
+          <label class="sr-only" for="video-source">B站视频链接或BV号</label>
+          <input id="video-source" type="text" autocomplete="off" spellcheck="false" placeholder="粘贴 B 站链接或 BV 号" maxlength="2000">
+          <button class="primary-button" type="submit">载入</button>
+        </div>
+        <div id="error" class="error" role="alert" hidden></div>
+      </form>
+      </details>
+      <details id="queue-panel" class="queue-panel"><summary>本批目录 <span id="queue-count"></span></summary><div id="queue-list" class="queue-list"></div></details>
+      <div class="player-footnote"><span>静音开始 · 默认关闭弹幕</span><button id="help-button" class="text-button" aria-expanded="false" aria-controls="help-panel">使用说明</button></div>
+      <aside id="help-panel" class="help-panel" hidden>
+        <p>扫码登录后默认使用账号的「为你推荐」；也可以手动切换到公开的综合热门。点「下一条」切换，默认静音；浏览器若拦截自动播放，点一下视频即可。滚轮继续用于滚动笔记页面。</p>
+        <p>「粘贴链接」支持 BV 号、av 号、B 站完整视频链接，以及指定分 P 的链接。短链接请先在 B 站打开，复制完整地址。</p>
+        <p>在 Codex 中按 Ctrl＋Shift＋B，收起整个右侧面板。页面内按 F8、Esc 或点击「下一条」上方的「专注」，可切回便笺。</p>
+        <p>F8、Esc 需要本页获得焦点，点击过视频后请用大按钮或 Codex 的侧栏快捷键。专注模式只隐藏区域，不主动暂停或卸载播放器；点击顶部「资料」即可返回。</p>
+        <p>登录后优先使用账号可看的 1080P，画质菜单可手动调整。遇到兼容问题可点「外链播放」切回官方嵌入播放器。画质和视频权限仍由 B 站决定。</p>
+      </aside>
+    </section>
+
+    <section class="notes-panel" aria-label="本地便笺">
+      <div class="section-heading"><label for="notes">随手记</label><span id="note-status">保存在本机</span></div>
+      <textarea id="notes" spellcheck="false" placeholder="今天想记下什么？&#10;&#10;思路、待办，或一个稍后再看的灵感。" aria-label="便笺内容"></textarea>
+      <div class="notes-footer"><span id="char-count">0 字</span><button id="clear-notes" class="text-button">清空便笺</button></div>
+    </section>
+
+    <div class="workspace-sections">
+      <section class="checklist-panel" aria-label="待办清单">
+        <div class="section-heading"><h2>待办清单</h2><span class="section-meta">一次专注一件事</span></div>
+        <div class="task-row"><input id="task-check-1" type="checkbox" aria-label="完成第一项"><input id="task-text-1" type="text" aria-label="第一项待办" placeholder="写下最重要的一件事" maxlength="200"></div>
+        <div class="task-row"><input id="task-check-2" type="checkbox" aria-label="完成第二项"><input id="task-text-2" type="text" aria-label="第二项待办" placeholder="需要跟进的事项" maxlength="200"></div>
+        <div class="task-row"><input id="task-check-3" type="checkbox" aria-label="完成第三项"><input id="task-text-3" type="text" aria-label="第三项待办" placeholder="稍后处理" maxlength="200"></div>
+        <p class="small-note" id="tasks-status">勾选和内容会保存在本机。</p>
+      </section>
+
+      <section class="draft-panel" aria-label="草稿区">
+        <div class="section-heading"><label for="draft">草稿区</label><span class="section-meta" id="draft-status">慢慢理清思路</span></div>
+        <textarea id="draft" spellcheck="false" aria-label="草稿内容" placeholder="背景&#10;&#10;想解决的问题是什么？&#10;&#10;&#10;思路&#10;&#10;有哪些可选的方法？&#10;&#10;&#10;下一步&#10;&#10;从一个小动作开始。"></textarea>
+      </section>
+
+      <section class="reference-panel" aria-label="快捷参考">
+        <div class="section-heading"><h2>快捷参考</h2><span class="section-meta">Markdown</span></div>
+        <div class="reference-grid">
+          <div><span>标题</span><code>## 小节标题</code></div>
+          <div><span>清单</span><code>- [ ] 待办事项</code></div>
+          <div><span>重点</span><code>**重要内容**</code></div>
+          <div><span>引用</span><code>&gt; 一段参考文字</code></div>
+          <div><span>链接</span><code>[名称](网址)</code></div>
+          <div><span>行内代码</span><code>`code`</code></div>
+        </div>
+        <p class="reference-footer">先记录，再整理。</p>
+      </section>
+    </div>
+
+    <footer class="statusbar"><span class="connection"><span class="dot ready"></span><span>Ctrl ⇧ B 收起 Codex 侧栏</span></span><span class="footer-label">仅本机</span></footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "sidebar-notes",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node launch.mjs",
+    "stop": "node launch.mjs stop",
+    "test": "node --test test/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "dashjs": "5.2.1",
+    "qrcode": "1.5.4"
+  }
+}

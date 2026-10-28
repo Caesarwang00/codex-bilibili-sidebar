@@ -1,0 +1,14 @@
+**/node_modules/
+**/.runtime/
+.env
+.env.*
+!.env.example
+*.dpapi
+*.dpapi.*
+*.log
+*.pem
+*.key
+cookies.txt
+cookies.json
+.DS_Store
+Thumbs.db
