@@ -8,22 +8,30 @@
 - 「专注」按钮和 F8 / Esc 隐藏视频区域，保留播放状态。
 - 便笺、待办和草稿在浏览器本地保存。
 
-## 本地运行
+## 让自己的 Codex 安装
 
-需要 Node.js 20 或更新版本，以及 pnpm。登录持久化使用 Windows DPAPI；其他平台不保存登录凭据。
+把下面这段话复制给 **Windows Codex 桌面版的本地聊天**：
+
+> 请帮我安装 https://github.com/Caesarwang00/codex-bilibili-sidebar 。阅读根目录 INSTALL.md，使用本机或 Codex 内置 Node.js 20+ 运行 setup.mjs，安装依赖并启动服务，然后在 Codex 右侧浏览器打开 http://127.0.0.1:17329/ ，让我用自己的 B 站账号扫码登录。保留仓库中的界面和全部功能。
+
+无需手动修改 Codex 配置。安装者使用自己的 B 站账号，获得相同界面和功能、属于自己的个性化推荐。[详细安装说明](INSTALL.md)
+
+## 手动运行
+
+需要 Node.js 20 或更新版本。安装脚本可使用 Codex 内置 Node 和包管理器；Windows 登录持久化使用 DPAPI。
 
 ```sh
-cd sidebar-notes
-pnpm install --frozen-lockfile
-node launch.mjs
+git clone https://github.com/Caesarwang00/codex-bilibili-sidebar.git
+cd codex-bilibili-sidebar
+node setup.mjs
 ```
 
-在 Codex 内置浏览器打开 <http://127.0.0.1:17329/>，首次使用点「账号 → 扫码登录」。Windows 安装依赖后也可以双击 `sidebar-notes/start.cmd` 启动。
+在 Codex 内置浏览器打开 <http://127.0.0.1:17329/>，首次使用点「账号 → 扫码登录」。Windows 也可以下载 ZIP、解压后双击根目录的 `start.cmd`，首次会自动安装依赖。
 
 停止服务：
 
 ```sh
-node launch.mjs stop
+node sidebar-notes/launch.mjs stop
 ```
 
 运行检查（在 `sidebar-notes` 目录）：
